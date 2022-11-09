@@ -4,7 +4,7 @@
 int main()
 {
     int valueSize = 10;
-    int value[valueSize];
+    int value[10];
 
     for(int i = 0; i < valueSize; i++)
     {
