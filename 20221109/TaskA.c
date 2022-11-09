@@ -20,19 +20,16 @@ int main()
         printf("%d\n", data[i]);
     }
 
-    int target = 5, i = 0;
-    while(i < valueSize)
+    int target = 5;
+    int result = -1;
+    for(int i = 0;i < valueSize; i++)
     {
         if(target == data[i])
         {
-            printf("%d Found it. index is %d", target, i);
+            result = i;
             break;
         }
-        i++;
-        if(i == valueSize)
-        {
-            printf("%d Not Found.", target);
-        }
     }
+    printf("target is index : %d", result);
     return 0;
 }

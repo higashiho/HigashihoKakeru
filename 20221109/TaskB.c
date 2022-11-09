@@ -14,7 +14,7 @@ int main()
     {
         for(int j = i + 1; j < maxValue; j++)
         {
-            if(data[i] < data[j])
+            if(data[i] > data[j])
             {
                 int tmp = data[i];
                 data[i] = data[j];

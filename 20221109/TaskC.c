@@ -29,23 +29,24 @@ int main()
     }
 
     int left = 0;
-    int right = maxValue;
+    int right = maxValue - 1;
+    int result = -1;
 
     int target = 50;
-    while(left <= right) {
+    while(left < right) {
      int mid = (left + right) / 2; 
-     printf("%d is\n", data[mid]);
         if (data[mid] == target) {
-            printf("Found!\n");
-            return 0;
+            result = mid;
+            break;
         } else if (data[mid] < target) {
-            printf("include :%d\n",mid);
             left = mid + 1; 
         } else {
-            printf("include :%d\n",mid);
-            right = mid - 1; 
+            right = mid; 
         }
     }
-    printf("Not Found.\n");
+    if(result >= 0)
+        printf("Target is index : %d\n", result);
+    else
+        printf("Not Find.\n");
     return 0;
 }
