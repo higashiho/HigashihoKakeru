@@ -1,8 +1,9 @@
 #include<stdio.h>
 #include<stdlib.h>
-
+#include <time.h>
 int main()
 {
+    srand(time(NULL));
     int maxValue = 100, value = 1;
     int data[100];
 
