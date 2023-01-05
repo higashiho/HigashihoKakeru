@@ -45,8 +45,8 @@ bool goalChek(int);
 void movePush();
 void moveIndex(int*, int*);
 void onExplored(int*, int);
-void moveSearch(int*);
-
+void moveSearch(int* ,int*);
+void plasMove(int*, int,int*);
 
 int main()
 {
@@ -67,7 +67,17 @@ int main()
         if (goalChek(data[row][col]))
         {
             printf("I'm on Goal.\n");
-            printf("Small value is.");
+            printf("Up%d,Down%d,Left%d,Right%d", 
+                nowSearchUpValue,
+                nowSearchDownValue,
+                nowSearchLeftValue,
+                nowSearchRigitValue
+            );
+            printf("\n");
+            for (int i = 0; i < nowSearchDownValue; i++)
+            {
+                printf("%d,", searchDown[i]);
+            }
             break;
         }
         else
@@ -91,6 +101,12 @@ void onExplored(int* index, int value)
     explored[ind++] = value;
     *index = ind;
 }
+void plasMove(int* index, int value,int*data)
+{
+    int ind = *index;
+    data[ind++] = value;
+    *index = ind;
+}
 void moveIndex(int* row, int* col)
 {
     int value = explored[searchCount];
@@ -103,7 +119,8 @@ void moveIndex(int* row, int* col)
                 *row = i;
                 *col = j;
                 movePush();
-                return 0;
+                return;
+                //return 0;
             }
         }
     }
@@ -114,19 +131,19 @@ void movePush()
     switch (move)
     {
     case LEFT:
-        moveSearch(&nowSearchLeftValue);
+        moveSearch(&nowSearchLeftValue, searchLeft);
         move = UP;
         break;
     case UP:
-        moveSearch(&nowSearchUpValue);
+        moveSearch(&nowSearchUpValue, searchUp);
         move = RIGHT;
         break;
     case RIGHT:
-        moveSearch(&nowSearchRigitValue);
+        moveSearch(&nowSearchRigitValue,searchRigit);
         move = DOWN;
         break;
     case DOWN:
-        moveSearch(&nowSearchDownValue);
+        moveSearch(&nowSearchDownValue,searchDown);
         move = UP;
         break;
     default:
@@ -134,7 +151,7 @@ void movePush()
     }
 }
 
-void moveSearch(int* value)
+void moveSearch(int* value,int* moveData)
 {
     int count = 0;
     int right = 1, left = -1, up = -1, down = 1;
@@ -142,24 +159,28 @@ void moveSearch(int* value)
     if (checkValue(data[row + left][col]) && (row + left) >= MIN_ROW)
     {
         onExplored(&exploredIndex, data[row + left][col]);
-        *value++; count++;
+        plasMove(value, data[row + left][col],moveData);
+        *value += 1; count++;
     }
     if (checkValue(data[row][col + up]) && (col + up) >= MIN_COL)
     {
+        plasMove(value, data[row][col + up], moveData);
         onExplored(&exploredIndex, data[row][col + up]);
-        *value++; count++;
+        *value += 1; count++;
 
     }
     if (checkValue(data[row + right][col]) && (row + right) < MAX_ROW)
     {
+        plasMove(value, data[row + right][col], moveData);
         onExplored(&exploredIndex, data[row + right][col]);
-        *value++; count++;
+        *value += 1; count++;
 
     }
     if (checkValue(data[row][col + down]) && (col + down) < MAX_COL)
     {
+        plasMove(value, data[row][col + down], moveData);
         onExplored(&exploredIndex, data[row][col + down]);
-        *value++; count++;
+        *value += 1; count++;
     }
     if (count == 0)
         *value = 0;
@@ -182,7 +203,6 @@ bool checkValue(int data)
     {
         if (explored[i] == data)
         {
-            printf("b");
             return false;
         }
     }
@@ -190,13 +210,11 @@ bool checkValue(int data)
     {
         if (noMove[i] == data)
         {
-            printf("a");
             return false;
 
         }
     }
 
-    printf("c");
     return true;
 }
 bool goalChek(int data)
