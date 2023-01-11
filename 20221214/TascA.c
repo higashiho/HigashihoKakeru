@@ -12,6 +12,7 @@
 #define MIN_COL 0
 
 enum MOVE_CASE {
+    START = -1,
     LEFT = 0,
     UP = 1,
     RIGHT = 2,
@@ -32,8 +33,8 @@ int searchUp[SEARCH_SIZE];
 int nowSearchUpValue = 0;
 int searchDown[SEARCH_SIZE];
 int nowSearchDownValue = 0;
-int searchRigit[SEARCH_SIZE];
-int nowSearchRigitValue = 0;
+int searchRight[SEARCH_SIZE];
+int nowSearchRightValue = 0;
 int searchLeft[SEARCH_SIZE];
 int nowSearchLeftValue = 0;
 
@@ -44,13 +45,14 @@ bool goalChek(int);
 void movePush();
 void moveIndex(int*, int*);
 void onExplored(int*, int);
-void moveSearch(int* ,int*);
+void moveSearch(int*, int*);
 void plasMove(int*, int, int*);
+void startMoveSearch();
 
 int main()
 {
-    
-    move = LEFT;
+
+    move = START;
     for (int i = 0; i < _countof(data); i++)
     {
         for (int j = 0; j < _countof(data[i]); j++)
@@ -67,11 +69,11 @@ int main()
         if (goalChek(data[row][col]))
         {
             printf("I'm on Goal.\n");
-            printf("Up%d,Down%d,Left%d,Right%d", 
+            printf("Up%d,Down%d,Left%d,Right%d",
                 nowSearchUpValue,
                 nowSearchDownValue,
                 nowSearchLeftValue,
-                nowSearchRigitValue
+                nowSearchRightValue
             );
             printf("\n");
             for (int i = 0; i < nowSearchDownValue; i++)
@@ -96,18 +98,22 @@ int main()
     return 0;
 }
 
+// 移動した場所格納用
 void onExplored(int* index, int value)
 {
     int ind = *index;
     explored[ind++] = value;
     *index = ind;
 }
-void plasMove(int* index, int value,int*data)
+// 移動回数
+void plasMove(int* index, int value, int* data)
 {
     int ind = *index;
     data[ind++] = value;
     *index = ind;
 }
+
+// 移動した先格納と移動
 void moveIndex(int* row, int* col)
 {
     int value = explored[searchCount];
@@ -126,11 +132,17 @@ void moveIndex(int* row, int* col)
         }
     }
 }
+
+// 移動ステート
 void movePush()
 {
     int nowValue = data[row][col];
     switch (move)
     {
+    case START:
+        startMoveSearch();
+        move = LEFT;
+        break;
     case LEFT:
         moveSearch(&nowSearchLeftValue, searchLeft);
         move = UP;
@@ -140,19 +152,20 @@ void movePush()
         move = RIGHT;
         break;
     case RIGHT:
-        moveSearch(&nowSearchRigitValue,searchRigit);
+        moveSearch(&nowSearchRightValue, searchRight);
         move = DOWN;
         break;
     case DOWN:
-        moveSearch(&nowSearchDownValue,searchDown);
-        move = UP;
+        moveSearch(&nowSearchDownValue, searchDown);
+        move = LEFT;
         break;
     default:
         break;
     }
 }
 
-void moveSearch(int* value,int* moveData)
+// 移動先調査
+void moveSearch(int* value, int* moveData)
 {
     int count = 0;
     int right = 1, left = -1, up = -1, down = 1;
@@ -160,33 +173,65 @@ void moveSearch(int* value,int* moveData)
     if (checkValue(data[row + left][col]) && (row + left) >= MIN_ROW)
     {
         onExplored(&exploredIndex, data[row + left][col]);
-        plasMove(value, data[row + left][col],moveData);
-        *value += 1; count++;
+        plasMove(value, data[row + left][col], moveData);
+        count++;
     }
     if (checkValue(data[row][col + up]) && (col + up) >= MIN_COL)
     {
         plasMove(value, data[row][col + up], moveData);
         onExplored(&exploredIndex, data[row][col + up]);
-        *value += 1; count++;
-
+        count++;
     }
     if (checkValue(data[row + right][col]) && (row + right) < MAX_ROW)
     {
         plasMove(value, data[row + right][col], moveData);
         onExplored(&exploredIndex, data[row + right][col]);
-        *value += 1; count++;
-
+         count++;
     }
     if (checkValue(data[row][col + down]) && (col + down) < MAX_COL)
     {
         plasMove(value, data[row][col + down], moveData);
         onExplored(&exploredIndex, data[row][col + down]);
-        *value += 1; count++;
+        count++;
     }
     if (count == 0)
         *value = 0;
 }
 
+// 初期移動用
+void startMoveSearch()
+{
+    int count = 0;
+    int right = 1, left = -1, up = -1, down = 1;
+
+    if (checkValue(data[row + left][col]) && (row + left) >= MIN_ROW)
+    {
+        plasMove(&nowSearchLeftValue, data[row + left][col], searchLeft);
+        onExplored(&exploredIndex, data[row + left][col]);
+        count++;
+    }
+    if (checkValue(data[row][col + up]) && (col + up) >= MIN_COL)
+    {
+        plasMove(&nowSearchUpValue, data[row][col + up], searchUp);
+        onExplored(&exploredIndex, data[row][col + up]);
+        count++;
+    }
+    if (checkValue(data[row + right][col]) && (row + right) < MAX_ROW)
+    {
+        plasMove(&nowSearchRightValue, data[row + right][col], searchDown);
+        onExplored(&exploredIndex, data[row + right][col]);
+        count++;
+    }
+    if (checkValue(data[row][col + down]) && (col + down) < MAX_COL)
+    {
+        plasMove(&nowSearchDownValue, data[row][col + down], searchRight);
+        onExplored(&exploredIndex, data[row][col + down]);
+        count++;
+    }
+}
+
+
+// 表示
 void printData()
 {
     for (int i = 0; i < _countof(data); i++)
@@ -198,6 +243,8 @@ void printData()
         }
     }
 }
+
+// いけない道か判断
 bool checkValue(int data)
 {
     for (int i = 0; i < exploredIndex; i++)
@@ -218,6 +265,8 @@ bool checkValue(int data)
 
     return true;
 }
+
+// ゴールチェック
 bool goalChek(int data)
 {
     if (data == goalValue)
