@@ -16,8 +16,7 @@ enum MOVE_CASE {
     UP = 1,
     RIGHT = 2,
     DOWN = 3
-};
-MOVE_CASE move;
+} move;
 
 int data[MAX_ROW][MAX_COL];
 int value = 0;
@@ -46,10 +45,11 @@ void movePush();
 void moveIndex(int*, int*);
 void onExplored(int*, int);
 void moveSearch(int* ,int*);
-void plasMove(int*, int,int*);
+void plasMove(int*, int, int*);
 
 int main()
 {
+    
     move = LEFT;
     for (int i = 0; i < _countof(data); i++)
     {
@@ -93,6 +93,7 @@ int main()
         }
         printf("\n");
     }
+    return 0;
 }
 
 void onExplored(int* index, int value)
